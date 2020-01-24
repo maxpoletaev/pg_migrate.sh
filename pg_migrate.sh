@@ -5,12 +5,12 @@
 
 set -e
 
+MIGRATIONS_DIR="migrations"
+MIGRATIONS_TABLE="schema_version"
+
 POSTGRES_USER=${POSTGRES_USER:-postgres}
 POSTGRES_HOST=${POSTGRES_HOST:-127.0.0.1}
 POSTGRES_PORT=${POSTGRES_PORT:-5432}
-
-MIGRATIONS_DIR="migrations"
-MIGRATIONS_TABLE="schema_version"
 PG_PASSWORD="$POSTGRES_PASSWORD"
 
 alias psql="psql -qtAX -v ON_ERROR_STOP=1 -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB"
@@ -21,7 +21,7 @@ migrations_table_exists=`psql -c "SELECT to_regclass('$MIGRATIONS_TABLE')"`
 if  [[ ! $migrations_table_exists ]]; then
     echo "Creating $MIGRATIONS_TABLE table"
     psql -c "CREATE TABLE $MIGRATIONS_TABLE (version INT NOT NULL, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"
-    psql -c "CREATE INDEX unique_$MIGRATIONS_TABLE ON $MIGRATIONS_TABLE (version)"
+    psql -c "CREATE UNIQUE INDEX unique_$MIGRATIONS_TABLE ON $MIGRATIONS_TABLE (version)"
     psql -c "INSERT INTO $MIGRATIONS_TABLE (version) VALUES (0)"
 fi
 
