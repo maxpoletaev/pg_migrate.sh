@@ -1,8 +1,8 @@
 # pg_migrate
 
-Schema migration management script for PostgreSQL. `pg_migrate.sh` is dead
-simple (~50 lines) and written in bash so it works everywhere and does not
-require any extra dependencies but `psql`.
+Schema migration management script for PostgreSQL. [`pg_migrate.sh`](pg_migrate.sh)
+is dead simple (~50 lines) and written in bash so it works everywhere and does
+not require any extra dependencies but `psql`.
 
 Before running you need to set a couple environment variables:
 
@@ -13,8 +13,12 @@ Before running you need to set a couple environment variables:
  * `POSTGRES_DB`
 
 Migration files are located in the [`migrations`](/migrations/) directory.
-Each migration is a plain SQL file which is sequentially executed by the
-script. The filename must follow the following template: `0001_name.sql`.
+Each migration is a plain SQL file which is sequentially executed by the script.
+
+The filename must follow the template: `0001_name.sql` where `0001` is the
+schema version (an integer, leading zeros can be used to enforce the proper
+file order in your IDE) and the `name` is actually, any name that makes sense.
+
 Migrations are not wrapped in transactions by default, you should take care of
 it by using `BEGIN` and `COMMIT` statements if needed.
 
