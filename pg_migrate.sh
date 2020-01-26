@@ -20,8 +20,7 @@ shopt -s expand_aliases
 migrations_table_exists=`psql -c "SELECT to_regclass('$MIGRATIONS_TABLE')"`
 if  [[ ! $migrations_table_exists ]]; then
     echo "Creating $MIGRATIONS_TABLE table"
-    psql -c "CREATE TABLE $MIGRATIONS_TABLE (version INT NOT NULL, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"
-    psql -c "CREATE UNIQUE INDEX unique_$MIGRATIONS_TABLE ON $MIGRATIONS_TABLE (version)"
+    psql -c "CREATE TABLE $MIGRATIONS_TABLE (version INT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"
 fi
 
 # Get the current version of schema
