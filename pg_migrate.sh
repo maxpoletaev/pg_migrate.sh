@@ -31,12 +31,12 @@ echo "Current schema version: $current_version"
 
 # Get migration files
 cd "$MIGRATIONS_DIR"
-migration_files=`ls | sort -V`
+migration_files=`ls *.sql | sort -V`
 
 # Apply migration files
 something_applied=false
 for file in $migration_files; do
-    version=`echo $file | sed "s/^0*//" | sed "s/_.*//"`
+    version=`echo $file | sed "s/_.*//"`
 
     if (( $version > $current_version )); then
         current_version=$version
