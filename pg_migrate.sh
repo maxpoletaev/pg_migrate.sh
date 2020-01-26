@@ -22,11 +22,10 @@ if  [[ ! $migrations_table_exists ]]; then
     echo "Creating $MIGRATIONS_TABLE table"
     psql -c "CREATE TABLE $MIGRATIONS_TABLE (version INT NOT NULL, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"
     psql -c "CREATE UNIQUE INDEX unique_$MIGRATIONS_TABLE ON $MIGRATIONS_TABLE (version)"
-    psql -c "INSERT INTO $MIGRATIONS_TABLE (version) VALUES (0)"
 fi
 
 # Get the current version of schema
-current_version=`psql -c "SELECT MAX(version) FROM $MIGRATIONS_TABLE"`
+current_version=`psql -c "SELECT COALESCE(MAX(version), 0) FROM $MIGRATIONS_TABLE"`
 echo "Current schema version: $current_version"
 
 # Get migration files
