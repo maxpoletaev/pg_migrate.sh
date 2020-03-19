@@ -27,13 +27,14 @@ Migration files are located in the [`migrations`](/migrations/) directory. They 
 └── pg_migrate.sh
 ```
 
-The name of a migration file must contain:
+The name of the migration file must contain:
 
 * `0001` — the version number, integer, leading zeroes can be used to enforce
-  the proper sorting in your IDE. Using a timestamp here is also possible.
-* `create_table` — the name of the migration, can be anything that makes sense for you.
-* `up` or `down` suffix — required suffixes to understand if it is a normal or
-  reverting migration. The `down` file can be omitted.
+  the proper sorting in your IDE. Using a timestamp like here is also possible.
+* `create_table` — the name of the migration, can be anything that makes sense for you,
+  usually a short description of what this migration does.
+* `up` or `down` — required suffixes to understand if it is a normal or reverting
+  migration. The `down` file is optional and can be omitted.
 
 Please note that migrations are not executed in transactions by default, you should take care of it by using `BEGIN` and `COMMIT` statements manually if needed.
 
