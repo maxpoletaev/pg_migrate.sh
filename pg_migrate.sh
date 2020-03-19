@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # PostgreSQL schema migration manager
-# https://github.com/zenwalker/pg_migrate.sh
+# https://github.com/zenwalker/pg_migrate.sh/tree/v2.0
 
 set -e
 [[ -f .env ]] && source .env
