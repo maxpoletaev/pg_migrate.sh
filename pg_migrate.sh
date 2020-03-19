@@ -27,10 +27,11 @@ shopt -s expand_aliases
 #   Log information
 #######################################
 create_migrations_table() {
-    migrations_table_exists=`psql -c "SELECT to_regclass('$MIGRATIONS_TABLE')"`
+    migrations_table_exists=`psql -c "SELECT to_regclass('$MIGRATIONS_TABLE');"`
+
     if  [[ ! $migrations_table_exists ]]; then
         echo "Creating $MIGRATIONS_TABLE table"
-        psql -c "CREATE TABLE $MIGRATIONS_TABLE (version INT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())"
+        psql -c "CREATE TABLE $MIGRATIONS_TABLE (version INT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW());"
     fi
 }
 
@@ -44,7 +45,7 @@ create_migrations_table() {
 #   Current schema version
 #######################################
 get_current_version() {
-    psql -c "SELECT COALESCE(MAX(version), 0) FROM $MIGRATIONS_TABLE"
+    psql -c "SELECT COALESCE(MAX(version), 0) FROM $MIGRATIONS_TABLE;"
 }
 
 #######################################
@@ -90,13 +91,17 @@ upgrade() {
     migration_files=`ls *.up.sql | sort -V`
 
     for file in $migration_files; do
-        version=`parse_version $file`
-        if (( $version > $current_version )) && (( $version <= $target_version )); then
-            current_version=$version
-            echo "Applying $file"
-            psql < $file
-            psql -c "INSERT INTO $MIGRATIONS_TABLE (version) VALUES ($version);"
-        fi
+        file_version=`parse_version $file`
+
+        # Skip files that are already applied
+        (( $file_version <= $current_version )) && continue
+
+        # Stop when target version is reached
+        (( $file_version > $target_version )) && break
+
+        echo "Applying $file"
+        psql < $file
+        psql -c "INSERT INTO $MIGRATIONS_TABLE (version) VALUES ($file_version);"
     done
 }
 
@@ -119,13 +124,17 @@ downgrade() {
     migration_files=`ls *.down.sql | sort -Vr`
 
     for file in $migration_files; do
-        version=`parse_version $file`
-        if (( $version <= $current_version )) && (( $version > $target_version )); then
-            current_version=$version
-            echo "Applying $file"
-            psql < $file
-            psql -c "DELETE FROM $MIGRATIONS_TABLE WHERE version = $version;"
-        fi
+        file_version=`parse_version $file`
+
+        # Skip files that have not been applied
+        (( $file_version > $current_version )) && continue
+
+        # Stop when target version is reached
+        (( $file_version <= $target_version )) && break
+
+        echo "Applying $file"
+        psql < $file
+        psql -c "DELETE FROM $MIGRATIONS_TABLE WHERE version = $file_version;"
     done
 }
 
