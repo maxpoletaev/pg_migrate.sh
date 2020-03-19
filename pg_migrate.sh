@@ -31,7 +31,7 @@ create_migrations_table() {
 
     if  [[ ! $migrations_table_exists ]]; then
         echo "Creating $MIGRATIONS_TABLE table"
-        psql -c "CREATE TABLE $MIGRATIONS_TABLE (version INT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW());"
+        psql -c "CREATE TABLE $MIGRATIONS_TABLE (version BIGINT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW());"
     fi
 }
 
@@ -137,7 +137,6 @@ downgrade() {
         psql -c "DELETE FROM $MIGRATIONS_TABLE WHERE version = $file_version;"
     done
 }
-
 
 main() {
     create_migrations_table
