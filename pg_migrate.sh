@@ -12,7 +12,7 @@ MIGRATIONS_TABLE="schema_version"
 POSTGRES_USER=${POSTGRES_USER:-postgres}
 POSTGRES_HOST=${POSTGRES_HOST:-127.0.0.1}
 POSTGRES_PORT=${POSTGRES_PORT:-5432}
-PG_PASSWORD="$POSTGRES_PASSWORD"
+export PGPASSWORD="$POSTGRES_PASSWORD"
 
 alias psql="psql -qtAX -v ON_ERROR_STOP=1 -U $POSTGRES_USER -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB"
 shopt -s expand_aliases
@@ -138,6 +138,13 @@ downgrade() {
     done
 }
 
+########################################
+# Decides which action to perform.
+# Arguments:
+#   Target database version to upgrade or downgrade
+# Outputs:
+#   Execution log
+########################################
 main() {
     create_migrations_table
 
